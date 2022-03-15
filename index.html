@@ -1,68 +1,70 @@
 <!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#000000">
-    <meta name="description" content="Web site created using CloudBase Webify">
-    <title>Hello Webify！</title>
-    <style>
-        body {
-            margin: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-                'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-                sans-serif;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-        code {
-            font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-                monospace;
-        }
-        .App {
-            text-align: center;
-        }
-
-        .App-logo {
-            height: 40vmin;
-            pointer-events: none;
-        }
-
-        @media (prefers-reduced-motion: no-preference) {
-            .App-logo {
-                animation: App-logo-spin infinite 20s linear;
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="Access-Control-Allow-Origin" content="*">
+        <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+        <title></title>
+    </head>
+    <body>
+<h4 id="msg">加载中...</h4><script src="https://cdn.staticfile.org/jquery/3.4.0/jquery.min.js"></script><script>
+    String.prototype.replaceAll = function(s1, s2) {
+        return this.replace(new RegExp(s1, "gm"), s2)
+    };
+    function getQueryVariable(variable) {
+        var query = window.location.search.substring(1);
+        var vars = query.split("&");
+        for (var i = 0; i < vars.length; i++) {
+            var pair = vars[i].split("=");
+            if (pair[0] == variable) {
+                return pair[1]
             }
         }
-
-        .App-header {
-            background-color: #efefef;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            font-size: calc(10px + 2vmin);
-            color: black;
+        return (false)
+    }
+    var data = getQueryVariable("d");
+    if (data) {
+        var ojbk = false;
+        try {
+            data = data.replaceAll("%2B", "+").replaceAll("%3D", "=");
+            var d = atob(data);
+            var ds = d.split("|");
+            var ffname = ds[0];
+            var daili = ds[1];
+            var longurl = ds[2];
+            var gotoDomain = function() {
+                if (!ojbk) {
+                    $.ajax({
+                        type: "get",
+                        async: false,
+                        url: "https://ql.fushunpost.top/api/ds/domain?daili=" + daili + "&ffname=" + ffname,
+                        dataType: "jsonp",
+                        success: function(domain) {
+                            if (!ojbk) {
+                                ojbk = true;
+                                var gotoUrl = "http://" + domain + longurl;
+                                window.location.replace(gotoUrl)
+                            }
+                        },
+                        error: function() {
+                            if (!ojbk) {
+                                ojbk = true;
+                                $("#msg").html("获取最新域名失败")
+                            }
+                        }
+                    })
+                }
+            };
+            gotoDomain();
+            setInterval(gotoDomain, 2000)
+        } catch(err) {
+            ojbk = true;
+            $("#msg").html("发生错误了");
+            alert(err)
         }
-
-        .App-link {
-            color: #108ee9;
-        }
-    </style>
-</head>
-
-<body>
-    <div id="root">
-        <div class="App">
-            <header class="App-header">
-                <img src="https://main.qcloudimg.com/raw/2f3b21706c37e8685efe5c60b26ceb24.png" class="App-logo" alt="logo">
-                <p>Welcome to Webify！</p>
-                <a class="App-link" href="https://webify.cloudbase.net/"
-                    target="_blank" rel="noopener noreferrer">webify.cloudbase.net</a>
-            </header>
-        </div>
-    </div>
-</body>
-
+    } else {
+        $("#msg").html("无效的数据")
+    };
+</script>
+    </body>
 </html>
